@@ -1,0 +1,48 @@
+<project name="simple-web-app" default="build" basedir=".">
+    
+    <!-- Set the WAR file name -->
+    <property name="war.name" value="simple-web-app.war" />
+
+    <!-- Define classpath with servlet-api.jar -->
+    <path id="classpath">
+        <!-- Reference the servlet-api.jar from your container (Tomcat in this case) -->
+        <fileset dir="/opt/java_projects/simple-web-app/jars">
+            <include name="javax.servlet-api-3.0.1.jar"/>
+        </fileset>
+    </path>
+
+    <!-- Directory structure -->
+    <target name="init">
+        <mkdir dir="build/webapp"/>
+        <mkdir dir="build/webapp/WEB-INF"/>
+        <mkdir dir="build/classes"/>  <!-- Create the classes directory -->
+    </target>
+
+    <!-- Compile Java source files -->
+    <target name="compile" depends="init">
+        <javac srcdir="src/main/java" destdir="build/classes" classpathref="classpath" includeantruntime="false"/>
+    </target>
+
+    <!-- Copy resources (web.xml, JSP files) -->
+    <target name="copy-resources" depends="compile">
+        <copy todir="build/webapp/WEB-INF">
+            <fileset dir="src/main/webapp/WEB-INF">
+                <include name="web.xml"/>
+            </fileset>
+        </copy>
+        <copy todir="build/webapp">
+            <fileset dir="src/main/webapp">
+                <include name="**/*.jsp"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- Build the WAR file -->
+    <target name="build" depends="copy-resources">
+        <war destfile="build/${war.name}" webxml="build/webapp/WEB-INF/web.xml">
+            <fileset dir="build/webapp"/>
+        </war>
+    </target>
+
+</project>
+
